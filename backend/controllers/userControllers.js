@@ -40,7 +40,17 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-	res.status(200).send("user logged in".green);
+	const { email, password } = req.body;
+	const user = await User.findOne({ email });
+	if (user && (await bcrypt.compare(password, user.password))) {
+		res.status(200).json({
+			_id: user.id,
+			email: user.email,
+			password: user.password
+		});
+	} else {
+		throw new error("wrong creds".red);
+	}
 };
 
 const userInfo = async (req, res) => {
